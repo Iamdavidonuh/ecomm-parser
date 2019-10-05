@@ -56,18 +56,28 @@ class BaseScrapper(object):
                 #get all keys in temp and compare that with that of `search_results`
                 for key in temp.keys():
                     if key not in search_results.keys():
-                        search_results[key] = list(temp[key])
+                        search_results[key] = list([temp[key]])
                     else:
                         search_results[key].append(temp[key])
             except Exception:
                 pass
         return search_results
-    """
+    
     @staticmethod
-    def display_items(result_dict):
-        for x,y in result_dict:
-            print()
-    """
+    def display_result_related(search_results):
+        """
+            Displays the titles, links prices, etc associated with an items `together` rather than in `<parse_results>`
+            @param `dr_results` new dictionary that holds all related data as `lists` with `keys(range of len <parse_results dict)` 
+            :rtype `dict`
+
+        """
+        dr_results = dict()
+        _temp = list(zip(*search_results.values())) 
+        # range of the sum of the iteration of the number of values in search_results dict
+        for x,y in zip(range(sum(map(len, search_results.values()))),_temp):
+            dr_results[x] = list(y)
+        return dr_results
+    
     
     def search(self, query=None):
         processed_query = self.replace_spaces(query)
@@ -78,5 +88,5 @@ class BaseScrapper(object):
         except Exception as e:
             print("request cannot be processed. Search returned: {}".format(e))
         search_results = self.parse_results(results)
-        return search_results
+        return self.display_result_related(search_results)
     

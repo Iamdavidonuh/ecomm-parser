@@ -19,7 +19,8 @@ class Jumia(BaseScrapper):
             discount = result_set.find(class_="sale-flag-percent").text
             old_price = result_set.find(True, {'class': '-old'}).text
         except AttributeError:
-            print("no discount for item")
+            pass
+            #print("no discount for item")
         search_results = {
             'brand': brand,
             'title': title,
