@@ -7,28 +7,33 @@ def get_data(requests,url, soup):
     html_file = page_raw.text
     raw_data = soup(html_file, "lxml")
     result_set = raw_data.find_all(True, {'class':['sku -gallery', '-has-offers']}) 
-    result = result_set[0]
+    result = result_set
     return result
 
-def parse_data(result):
+def parse_data(result_set):
     #getting important stuffs needed
-    _ = result.find(class_='title')
-    brand = _.find(class_='brand').text
-    title = _.find(class_='name').text
-    link = result.a['href']
-    img = result.img['data-src']
-    #currency = result.find(class_="price").span['data-currency-iso']
-    old_price = result.find(True, {'class': '-old'}).text
-    price = result.find(class_="price").text
-    discount = result.find(class_="sale-flag-percent").text
-
-    #printing results
-    print(brand)
-    print(title)
-    print(link)
-    print(old_price)
-    print(price)
-    print(discount)
+    for result in result_set:
+        
+        _ = result.find(class_='title')
+        brand = _.find(class_='brand').text
+        title = _.find(class_='name').text
+        link = result.a['href']
+        img = result.img['data-src']
+        #currency = result.find(class_="price").span['data-currency-iso']
+        old_price = result.find(True, {'class': '-old'}).text
+        price = result.find(class_="price").text
+        try:
+            discount = result.find(class_="sale-flag-percent").text
+        except Exception:
+            discount = "No discount available"
+        #printing results
+        print('brand: ',brand)
+        print('title: ',title)
+        print('link: ',link)
+        print('old_price: ',old_price)
+        print('new_price: ',price)
+        print('discount: ',discount)
+        print('..........................................................')
 
 def run():
     result = get_data(requests,'https://www.jumia.com.ng/keyboards-mice-accessories/',soup)
