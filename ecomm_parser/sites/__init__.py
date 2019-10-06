@@ -1,0 +1,1 @@
+from .jumia import Jumia

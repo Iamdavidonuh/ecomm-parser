@@ -1,1 +1,1 @@
-from ecomm_parser import *
+from ecomm_parser.sites import *

@@ -1,4 +1,4 @@
-from base import BaseScrapper
+from ecomm_parser.base import BaseScrapper
 
 
 class Jumia(BaseScrapper):
