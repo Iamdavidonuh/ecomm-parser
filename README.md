@@ -32,3 +32,5 @@ Create virtual environment and install requirements
 Pull requests are welcome. For major changes, please open an issue first.
 
 ## Acknowledgement
+- Thanks goes out to <a href="https://github.com/MeNsaaH"><b>Mmadu Manasseh</b></a> for the success of this project
+ 
