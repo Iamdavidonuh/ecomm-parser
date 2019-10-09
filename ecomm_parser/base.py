@@ -70,7 +70,7 @@ class BaseScrapper(object):
         return discount
     
     @staticmethod
-    def display_result_related(search_results, discount=None):
+    def display_result_related(search_results,):
         """
             Displays the titles, links prices, etc associated with an items `together` rather than in `<parse_results>`
             @param `dr_results` new dictionary that holds all related data as `lists` with `keys(range of len <parse_results dict)` 
@@ -82,11 +82,7 @@ class BaseScrapper(object):
         # range of the sum of the iteration of the number of values in search_results dict
         for x,y in zip(range(sum(map(len, search_results.values()))),_temp):
             dr_results[x] = list(y)
-            if 'no discount' in y[4]:
-                continue
-            value = int(y[4].replace("%",""))
-            if value <= discount:
-                webbrowser.open(y[3])
+            
         return dr_results
     
     @staticmethod
@@ -101,8 +97,11 @@ class BaseScrapper(object):
         pass
 
    
-    
-    def search(self, query=None,discount=None):
+    def search(self, query=None):
+        """
+        Returns results in a `dict` with values `brand`, `item name`, `price`, `link`
+        `discount`, and `old price` 
+        """
         processed_query = self.replace_spaces(query)
         results = None
         try:
@@ -111,9 +110,32 @@ class BaseScrapper(object):
         except Exception as e:
             print("request cannot be processed. Search returned: {}".format(e))
         search_results = self.parse_results(results)
-        if discount:
-            return self.display_result_related(search_results,discount)
-        else:
-            return self.display_result_related(search_results)
-
+        return self.display_result_related(search_results)
     
+    def get_search(self,query=None):
+        pass
+        
+    #TODO find a beta way to reimplement this 
+    def search_goto_discount(self, query, discount):
+        """
+        works exactly like <search> method but it opens the browser with the links of the 
+        discount value or more than the discount value selected 
+        """
+        results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
+        #results = self.parse_results(self.parse_soup(self.replace_spaces(query)))
+        result_list = list(zip(*results.values()))    
+        for x,y in zip(range(sum(map(len, results.values()))),result_list):
+            try:
+                if 'no discount' in y[4]:
+                    continue
+                value = self.discount_stripper(y[4])
+                if value <= discount:
+                    webbrowser.open(y[3])
+                else:
+                    print("No item meets the discount provided")
+            except Exception:
+                continue
+
+        
+        
+
