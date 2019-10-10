@@ -8,7 +8,6 @@ class BaseScrapper(object):
     __metaclass__ = ABCMeta
     
 
-    
     def replace_spaces(self, url_link=None):
         return url_link.replace(" ", '%20')
 
@@ -86,11 +85,9 @@ class BaseScrapper(object):
         return dr_results
     
    
-    def search(self, query=None, page=1, start_num=None, end_num=None):
+    def search(self, query=None, page=1):
         """
-        @param page: `type` `int` if specified parses the page num you want
-        @param `start_num` and `end_num` if specified tells where crawler which pages to start
-        crawling and where to stop 
+        @param page: `type` `int` if specified parses the page num you want 
         Returns results in a `dict` with values `brand`, `item name`, `price`, `link`
         `discount`, and `old price` 
         """
@@ -105,12 +102,15 @@ class BaseScrapper(object):
         search_results = self.parse_results(results)
         return self.display_result_related(search_results)
  
+    
     #TODO find a beta way to reimplement this 
     def search_get_discount(self, query, page=1, discount=None,start_num=None, end_num=None):
 
         """
         works exactly like <search> method but it opens the browser with the links of the 
         discount value or more than the discount value selected.
+        @param `start_num` and `end_num` if specified tells where crawler which pages to start
+        crawling and where to stop
         `Note: if you don't specify `page` please do so to specify other `keyword arguments`
         example:` ``j.search_get_discount(query,discount=value ,start_num=value, end_num=value)``
         """
@@ -120,7 +120,7 @@ class BaseScrapper(object):
                 query = query.rstrip('/') + '/?page={}'.format(start_num)
                 
                 # show current page the crawler is processing
-                print('{}. Processing Page {}.{}'.format('.'*15, start_num ,'.'*15))
+                print('{}. Processing Page {}.{}'.format('.'*25, start_num ,'.'*25))
                 results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
                 self.discount_iter(results, discount=discount)
                 start_num = start_num + 1
@@ -129,23 +129,18 @@ class BaseScrapper(object):
                 query = query.rstrip('/') + '/?page={}'.format(end_num)
                 
                 # show last page the crawler is processing
-                print('{}. Processing Page {}.{}'.format('.'*15, end_num ,'.'*15))
+                print('{}. Processing Page {}.{}'.format('.'*25, end_num ,'.'*25))
                 results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
                 return self.discount_iter(results, discount=discount)
             
         
         else:
             
-            print('{}. Processing Page {}.{}'.format('.'*15, page ,'.'*15))
+            print('{}. Processing Page {}.{}'.format('.'*25, page ,'.'*25))
             query = query.rstrip('/') + '/?page={}'.format(page)
             results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
             return self.discount_iter(results, discount=discount)
-
-            #start_num = start_num, end_num=end_num if start_num and end_num is None else start_num, end_num 
             
-            
-
-
     
     @staticmethod
     def discount_iter(results, discount=None):
