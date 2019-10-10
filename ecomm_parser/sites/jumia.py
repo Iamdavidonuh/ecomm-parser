@@ -3,8 +3,8 @@ from ecomm_parser.base import BaseScrapper
 
 class Jumia(BaseScrapper):
     
-    url_link = "https://www.jumia.com.ng/keyboards-mice-accessories/"
-    
+    #url_link = "https://www.jumia.com.ng/keyboards-mice-accessories/"
+    url_link = 'https://www.jumia.com.ng/keyboards-mice-accessories/?page=2'
     def parse_soup(self, soup):
         # find all classes with 'sku -gallery', '-has-offers'' => each result
         return soup.find_all(True, {'class':['sku -gallery', '-has-offers']})

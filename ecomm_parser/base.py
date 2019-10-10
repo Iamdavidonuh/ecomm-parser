@@ -85,23 +85,16 @@ class BaseScrapper(object):
             
         return dr_results
     
-    @staticmethod
-    def open_link_with_discount(search_results,discount):
-        """
-        Opens the webbrowser when a particular product has or is above a `discount` specified
-        """
-        pass
-
-    @staticmethod
-    def open_link():
-        pass
-
    
-    def search(self, query=None):
+    def search(self, query=None, page=1, start_num=None, end_num=None):
         """
+        @param page: `type` `int` if specified parses the page num you want
+        @param `start_num` and `end_num` if specified tells where crawler which pages to start
+        crawling and where to stop 
         Returns results in a `dict` with values `brand`, `item name`, `price`, `link`
         `discount`, and `old price` 
         """
+        query = query.rstrip('/') + '/?page={}'.format(page)
         processed_query = self.replace_spaces(query)
         results = None
         try:
@@ -111,31 +104,64 @@ class BaseScrapper(object):
             print("request cannot be processed. Search returned: {}".format(e))
         search_results = self.parse_results(results)
         return self.display_result_related(search_results)
-    
-    def get_search(self,query=None):
-        pass
-        
+ 
     #TODO find a beta way to reimplement this 
-    def search_goto_discount(self, query, discount):
+    def search_get_discount(self, query, page=1, discount=None,start_num=None, end_num=None):
+
         """
         works exactly like <search> method but it opens the browser with the links of the 
-        discount value or more than the discount value selected 
+        discount value or more than the discount value selected.
+        `Note: if you don't specify `page` please do so to specify other `keyword arguments`
+        example:` ``j.search_get_discount(query,discount=value ,start_num=value, end_num=value)``
         """
-        results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
-        #results = self.parse_results(self.parse_soup(self.replace_spaces(query)))
+        if start_num and end_num is not None:
+            
+            while(start_num < end_num):
+                query = query.rstrip('/') + '/?page={}'.format(start_num)
+                
+                # show current page the crawler is processing
+                print('{}. Processing Page {}.{}'.format('.'*15, start_num ,'.'*15))
+                results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
+                self.discount_iter(results, discount=discount)
+                start_num = start_num + 1
+                            
+            else:
+                query = query.rstrip('/') + '/?page={}'.format(end_num)
+                
+                # show last page the crawler is processing
+                print('{}. Processing Page {}.{}'.format('.'*15, end_num ,'.'*15))
+                results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
+                return self.discount_iter(results, discount=discount)
+            
+        
+        else:
+            
+            print('{}. Processing Page {}.{}'.format('.'*15, page ,'.'*15))
+            query = query.rstrip('/') + '/?page={}'.format(page)
+            results = self.parse_results(self.parse_soup(self.get_soup(self.replace_spaces(query))))
+            return self.discount_iter(results, discount=discount)
+
+            #start_num = start_num, end_num=end_num if start_num and end_num is None else start_num, end_num 
+            
+            
+
+
+    
+    @staticmethod
+    def discount_iter(results, discount=None):
         result_list = list(zip(*results.values()))    
         for x,y in zip(range(sum(map(len, results.values()))),result_list):
             try:
                 if 'no discount' in y[4]:
                     continue
-                value = self.discount_stripper(y[4])
+                value = BaseScrapper.discount_stripper(y[4])
                 if value <= discount:
                     webbrowser.open(y[3])
                 else:
-                    print("No item meets the discount provided")
+                    print(" **'item {}'** does not meet the discount value you provided".format(y[1]))
             except Exception:
                 continue
+        
 
         
         
-
