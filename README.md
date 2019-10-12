@@ -6,6 +6,7 @@ A simple program that scrapes for items and their prices, discounts on ecommmerc
 
 - [Ecommerce Parser](#ecomm-parser)
     - [Supported Sites](#supported-sites)
+    - [Usage](#usage)
     - [Development](#development)
     - [Contributing](#contributing)
     - [Acknowledgement](#acknowledgment)
@@ -13,8 +14,26 @@ A simple program that scrapes for items and their prices, discounts on ecommmerc
 ## Supported Sites
 - Jumia
 
+## Usage
+```
+python
+from ecomm_parser.sites import Jumia
+j = Jumia()
+
+j.search('https://www.jumia.com.ng/keyboards-mice-accessories')
+
+# to search for items with discount
+
+j.search_get_discount('https://www.jumia.com.ng/keyboards-mice-accessories',discount=-85, start_num = 13, end_num=19)
+```
+### Demo
+
+![Demo](assets/search_jumia.gif)
+
+![Demo](assets/get_discount_jumia.gif)
 
 ## Development
+
 Clone the repository
 
 ```bash
